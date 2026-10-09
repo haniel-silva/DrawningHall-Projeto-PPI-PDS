@@ -1,12 +1,16 @@
 let cor;
 let espessura;
+let altura;
+let largura;
 
 function setup() {
     // Cria uma tela de 800x600 pixels
-    createCanvas(800, 600);
-    background(255); // Fundo branco
+    altura = getElementById('altura');
+    largura = getElementById('largura');
+    createCanvas(altura.value, largura.value);
+    background(0); // Fundo branco
     cor = document.getElementById('escolher-cor');
-    espessura = document.getElementById('escolher-espessura')
+    espessura = document.getElementById('escolher-espessura');
   }
   
   function draw() {
