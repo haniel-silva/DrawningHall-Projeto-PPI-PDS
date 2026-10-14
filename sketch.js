@@ -5,27 +5,11 @@ let largura;
 
 function setup() {
     // Cria uma tela de 800x600 pixels
-    altura = getElementById('altura');
-    largura = getElementById('largura');
-    createCanvas(altura.value, largura.value);
-    background(0); // Fundo branco
+    altura = document.getElementById('altura');
+    largura = document.getElementById('largura');
     cor = document.getElementById('escolher-cor');
     espessura = document.getElementById('escolher-espessura');
   }
   
-  function draw() {
-    // Desenha apenas quando o botão do mouse estiver pressionado
-    if (mouseIsPressed) {
-      stroke(cor.value); // Cor da linha (preto)
-      strokeWeight(espessura.value); // Espessura da linha
-      // Desenha uma linha da posição anterior do mouse até a posição atual
-      line(pmouseX, pmouseY, mouseX, mouseY);
-    }
-  }
-  
-  // Limpa a tela ao pressionar a tecla 'C' ou ESPAÇO
-  function keyPressed() {
-    if (key === 'c' || key === 'C' || keyCode === 32) {
-      background(255);
-    }
-  }
+ 
+
