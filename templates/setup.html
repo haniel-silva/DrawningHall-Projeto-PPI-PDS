@@ -22,17 +22,16 @@
 <body>
   <h1>DrawningHall - O seu site de desenhos!</h1>
 
-  <script src="sketch.js"></script>
 
-  <form action="{{ url_for('desenho.html') }}" method="post">
+  <form action="{{ url_for('desenhar') }}" method="POST">
+    <label for="altura" id="tamanho">Selecione a altura:</label>
+    <input type="number" id="altura" name="altura-escolher" value="0">
 
+    <label for="largura" id="tamanho">Selecione a largura:</label>
+    <input type="number" id="largura" name="largura-escolher" value="0">
+
+    <button type="submit">Criar tela de desenhos</button>
   </form>
-  <label for="altura" id="tamanho">Selecione a altura:</label>
-  <input type="altura" id="altura" name="altura-escolher" value="0">
-
-  <label for="largura" id="tamanho">Selecione a largura:</label>
-  <input type="largura" id="largura" name="largura-escolher" value="0">
-
-
+  
 </body>
 </html>

@@ -1,16 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DrawningHall</title>
+    <title>DrawningHall - Desenhar</title>
+    <!-- Biblioteca p5.js importada corretamente via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #e0e0e0;
+            font-family: sans-serif;
+        }
+        h1 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .controles { 
+            margin-bottom: 20px; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+  
+        canvas {
+            border: 2px solid #b0b0b0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+    </style>
 </head>
 <body>
-    <script src="sketch2.js"></script>
-    <label for="escolher-cor" id="cor-selecionada">Selecione uma cor:</label>
-    <input type="color" id="escolher-cor" name="cor" value="#ff0000">
+    <h1>DrawningHall - Área de Desenho</h1>
 
-    <label for="espessura" id="tamanho">Selecione a espessura da linha:</label>
-    <input type="lapis" id="escolher-espessura" name="strokeWeigth" value="0">
+    <div class="controles">
+        <label for="escolher-cor">Selecione uma cor:</label>
+        <input type="color" id="escolher-cor" value="#ff0000">
+
+        <label for="escolher-espessura">Espessura da linha:</label>
+        
+        <input type="number" id="escolher-espessura" value="5" min="1" max="50">
+        
+        <small style="margin-left: 10px;">Aperte <b>Espaço</b> ou <b>C</b> para limpar</small>
+    </div>
+
+
+    <script>
+        let corElemento;
+        let espessuraElemento;
+
+       
+        let larguraCanvas = Number("{{ largura }}") || 800;
+        let alturaCanvas = Number("{{ altura }}") || 600;
+
+        function setup() {
+            createCanvas(larguraCanvas, alturaCanvas);
+            background(255); 
+            
+
+            corElemento = document.getElementById('escolher-cor');
+            espessuraElemento = document.getElementById('escolher-espessura');
+        }
+
+        function draw() {
+            if (mouseIsPressed) {
+                stroke(corElemento.value);
+                strokeWeight(Number(espessuraElemento.value));
+                line(pmouseX, pmouseY, mouseX, mouseY);
+            }
+        }
+
+        function keyPressed() {
+        
+            if (key === 'c' || key === 'C' || keyCode === 32) {
+                background(255);
+            }
+        }
+    </script>
 </body>
 </html>
