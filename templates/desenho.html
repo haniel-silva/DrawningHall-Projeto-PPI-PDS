@@ -4,71 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DrawningHall - Desenhar</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- p5.js -->
     <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
     <style>
         body {
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #e0e0e0;
-        font-family: sans-serif;
-    }
-        h1 {
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-    
-        .controles { 
-        margin-bottom: 20px; 
-        background: white; 
-        padding: 15px; 
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-    
+            /* Degradê moderno de fundo */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Estilização do Título */
+        .titulo-pagina {
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Card de Controles */
+        .card-controles {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: none;
+        }
+
+        /* Ícones simbólicos */
+        .icone-controle {
+            font-size: 1.25rem;
+            color: #555;
+            transition: color 0.2s ease;
+        }
+        .icone-controle:hover {
+            color: #764ba2;
+        }
+
+        /* Ajuste do Canvas */
         canvas {
-        border: 2px solid #b0b0b0;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
+            border: 3px solid #ffffff;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+        }
     </style>
-    
-<body>
-    <h1>DrawningHall - Área de Desenho</h1>
+</head>
+<body class="d-flex flex-column align-items-center py-4">
 
-    <div class="controles">
-        <label for="escolher-cor">Selecione uma cor:</label>
-        <input type="color" id="escolher-cor" value="#ff0000">
+    <div class="container text-center">
+        <!-- Título estilizado -->
+        <h1 class="mb-4 titulo-pagina">DrawningHall</h1>
 
-        <label for="escolher-espessura">Espessura da linha:</label>
-        <i class="fa-solid fa-pen"></i>
-        
-        <input type="number" id="escolher-espessura" value="5" min="1" max="50">
-        
-        <small style="margin-left: 10px;">Aperte <b>Espaço</b> ou <b>C</b> para limpar</small>
+        <!-- Controles com ícones puramente simbólicos -->
+        <div class="card card-controles shadow-lg p-3 mb-4 mx-auto d-inline-flex flex-row flex-wrap align-items-center justify-content-center gap-4 rounded-4">
+            
+            <!-- Ícone de Pincel/Cor -->
+            <div class="d-flex align-items-center gap-2" title="Selecionar Cor">
+                <i class="fa fa-paint-brush icone-controle" aria-hidden="true"></i>
+                <input type="color" id="escolher-cor" class="form-control form-control-color border-0 bg-transparent" value="#ff0000" style="cursor: pointer;">
+            </div>
+
+            <div class="vr opacity-25"></div> <!-- Divisória vertical -->
+
+            <!-- Ícone de Espessura -->
+            <div class="d-flex align-items-center gap-2" title="Espessura da Linha">
+                <i class="fa fa-pencil icone-controle" aria-hidden="true"></i>
+                <input type="number" id="escolher-espessura" class="form-control form-control-sm text-center fw-bold" value="5" min="1" max="50" style="width: 70px;">
+            </div>
+
+            <div class="vr opacity-25"></div> <!-- Divisória vertical -->
+
+            <!-- Atalhos de teclado -->
+            <div class="text-secondary small d-flex align-items-center gap-1">
+                <i class="fa fa-keyboard-o me-1"></i>
+                <span>Aperte <kbd class="bg-dark text-white">Espaço</kbd> ou <kbd class="bg-dark text-white">C</kbd> para limpar</span>
+            </div>
+        </div>
+
+        <!-- Canvas p5.js -->
+        <div id="canvas-container" class="d-flex justify-content-center"></div>
     </div>
-
 
     <script>
         let corElemento;
         let espessuraElemento;
 
-       
         let larguraCanvas = Number("{{ largura }}") || 800;
         let alturaCanvas = Number("{{ altura }}") || 600;
 
         function setup() {
-
-            createCanvas(larguraCanvas, alturaCanvas);
+            let canvas = createCanvas(larguraCanvas, alturaCanvas);
+            canvas.parent("canvas-container");
             background(255); 
+            
             corElemento = document.getElementById('escolher-cor');
             espessuraElemento = document.getElementById('escolher-espessura');
-            
         }
 
         function draw() {
@@ -80,12 +113,13 @@
         }
 
         function keyPressed() {
-        
             if (key === 'c' || key === 'C' || keyCode === 32) {
                 background(255);
             }
         }
     </script>
 
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
