@@ -3,7 +3,7 @@ from flask import render_template, request
 
 app = Flask(__name__)
 
-@app.route("/setup")
+@app.route("/")
 def definicao():
     return render_template('setup.html')
 
