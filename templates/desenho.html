@@ -13,13 +13,11 @@
     
     <style>
         body {
-            /* Degradê moderno de fundo */
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
         }
 
-        /* Estilização do Título */
         .titulo-pagina {
             color: #ffffff;
             font-weight: 800;
@@ -27,70 +25,105 @@
             text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
         }
 
-        /* Card de Controles */
         .card-controles {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
             border: none;
         }
 
-        /* Ícones simbólicos */
         .icone-controle {
             font-size: 1.25rem;
             color: #555;
-            transition: color 0.2s ease;
-        }
-        .icone-controle:hover {
-            color: #764ba2;
         }
 
-        /* Ajuste do Canvas */
         canvas {
             border: 3px solid #ffffff;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
             border-radius: 12px;
+            cursor: crosshair;
         }
     </style>
 </head>
 <body class="d-flex flex-column align-items-center py-4">
 
     <div class="container text-center">
-        <!-- Título estilizado -->
         <h1 class="mb-4 titulo-pagina">DrawningHall</h1>
 
-        <!-- Controles com ícones puramente simbólicos -->
-        <div class="card card-controles shadow-lg p-3 mb-4 mx-auto d-inline-flex flex-row flex-wrap align-items-center justify-content-center gap-4 rounded-4">
+        <!-- Controles com Ferramentas, Balde de Tinta e Postagem -->
+        <div class="card card-controles shadow-lg p-3 mb-4 mx-auto d-inline-flex flex-row flex-wrap align-items-center justify-content-center gap-3 rounded-4">
             
-            <!-- Ícone de Pincel/Cor -->
+            <!-- Seleção de Ferramenta (Pincel vs Balde) -->
+            <div class="btn-group" role="group" aria-label="Ferramentas de desenho">
+                <button type="button" id="btn-pincel" class="btn btn-dark active" onclick="mudarFerramenta('pincel')" title="Ferramenta Pincel">
+                    <i class="fa fa-pencil"></i>
+                </button>
+                <button type="button" id="btn-balde" class="btn btn-outline-dark" onclick="mudarFerramenta('balde')" title="Balde de Tinta">
+                    <i class="fa fa-tint"></i>
+                </button>
+            </div>
+
+            <div class="vr opacity-25"></div>
+
+            <!-- Cor -->
             <div class="d-flex align-items-center gap-2" title="Selecionar Cor">
                 <i class="fa fa-paint-brush icone-controle" aria-hidden="true"></i>
                 <input type="color" id="escolher-cor" class="form-control form-control-color border-0 bg-transparent" value="#ff0000" style="cursor: pointer;">
             </div>
 
-            <div class="vr opacity-25"></div> <!-- Divisória vertical -->
+            <div class="vr opacity-25"></div>
 
-            <!-- Ícone de Espessura -->
-            <div class="d-flex align-items-center gap-2" title="Espessura da Linha">
-                <i class="fa fa-pencil icone-controle" aria-hidden="true"></i>
+            <!-- Espessura (visível apenas para o pincel) -->
+            <div class="d-flex align-items-center gap-2" id="grupo-espessura" title="Espessura da Linha">
+                <i class="fa fa-arrows-h icone-controle" aria-hidden="true"></i>
                 <input type="number" id="escolher-espessura" class="form-control form-control-sm text-center fw-bold" value="5" min="1" max="50" style="width: 70px;">
             </div>
 
-            <div class="vr opacity-25"></div> <!-- Divisória vertical -->
+            <div class="vr opacity-25"></div>
 
-            <!-- Atalhos de teclado -->
+            <!-- Atalhos -->
             <div class="text-secondary small d-flex align-items-center gap-1">
                 <i class="fa fa-keyboard-o me-1"></i>
-                <span>Aperte <kbd class="bg-dark text-white">Espaço</kbd> ou <kbd class="bg-dark text-white">C</kbd> para limpar</span>
+                <span>Limpar: <kbd class="bg-dark text-white">Espaço</kbd> / <kbd class="bg-dark text-white">C</kbd></span>
             </div>
+
+            <div class="vr opacity-25"></div>
+
+            <!-- Botão que aciona a Modal do Mural -->
+            <button type="button" class="btn btn-success btn-sm fw-bold px-3" data-bs-toggle="modal" data-bs-target="#modalTitulo">
+                <i class="fa fa-cloud-upload me-1"></i> Postar no Mural
+            </button>
         </div>
 
         <!-- Canvas p5.js -->
         <div id="canvas-container" class="d-flex justify-content-center"></div>
     </div>
 
+    <!-- Modal do Bootstrap para digitar o Título sem usar prompt() -->
+    <div class="modal fade" id="modalTitulo" tabindex="-1" aria-labelledby="modalTituloLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+          <div class="modal-header bg-dark text-white rounded-top-4">
+            <h5 class="modal-title fw-bold" id="modalTituloLabel"><i class="fa fa-cloud-upload me-2"></i> Publicar no Mural</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4 text-start">
+            <div class="mb-3">
+              <label for="input-titulo-desenho" class="form-label fw-semibold text-secondary">Dê um título para o seu desenho:</label>
+              <input type="text" class="form-control form-control-lg" id="input-titulo-desenho" value="Minha Obra de Arte" required>
+            </div>
+          </div>
+          <div class="modal-footer bg-light rounded-bottom-4">
+            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-success px-4 fw-bold" onclick="enviarParaMural()">Confirmar e Postar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
         let corElemento;
         let espessuraElemento;
+        let ferramentaAtual = 'pincel'; // 'pincel' ou 'balde'
 
         let larguraCanvas = Number("{{ largura }}") || 800;
         let alturaCanvas = Number("{{ altura }}") || 600;
@@ -105,11 +138,130 @@
         }
 
         function draw() {
-            if (mouseIsPressed) {
+            // Desenho livre com o mouse pressionado (somente se a ferramenta for pincel)
+            if (mouseIsPressed && ferramentaAtual === 'pincel') {
                 stroke(corElemento.value);
                 strokeWeight(Number(espessuraElemento.value));
                 line(pmouseX, pmouseY, mouseX, mouseY);
             }
+        }
+
+        // Função chamada ao clicar no canvas (ideal para o balde de tinta)
+        function mousePressed() {
+            if (mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
+                if (ferramentaAtual === 'balde') {
+                    floodFill(Math.floor(mouseX), Math.floor(mouseY), corElemento.value);
+                }
+            }
+        }
+
+        // Alternar entre Pincel e Balde de Tinta
+        function mudarFerramenta(ferramenta) {
+            ferramentaAtual = ferramenta;
+            let btnPincel = document.getElementById('btn-pincel');
+            let btnBalde = document.getElementById('btn-balde');
+            let grupoEspessura = document.getElementById('grupo-espessura');
+
+            if (ferramenta === 'pincel') {
+                btnPincel.className = 'btn btn-dark active';
+                btnBalde.className = 'btn btn-outline-dark';
+                grupoEspessura.style.display = 'flex';
+            } else {
+                btnBalde.className = 'btn btn-dark active';
+                btnPincel.className = 'btn btn-outline-dark';
+                grupoEspessura.style.display = 'none';
+            }
+        }
+
+        // Algoritmo de Preenchimento por Inundação (Flood Fill Iterativo)
+        function floodFill(startX, startY, hexColor) {
+            loadPixels();
+            
+            let d = pixelDensity();
+            let index = 4 * (startY * width * d * d + startX * d);
+            
+            let targetR = pixels[index];
+            let targetG = pixels[index + 1];
+            let targetB = pixels[index + 2];
+            let targetA = pixels[index + 3];
+            
+            let c = color(hexColor);
+            let repR = red(c);
+            let repG = green(c);
+            let repB = blue(c);
+            let repA = alpha(c);
+            
+            if (targetR === repR && targetG === repG && targetB === repB && targetA === repA) {
+                updatePixels();
+                return;
+            }
+            
+            let pilha = [[startX, startY]];
+            let visitado = new Uint8Array(width * height);
+            
+            while (pilha.length > 0) {
+                let [x, y] = pilha.pop();
+                
+                if (x < 0 || x >= width || y < 0 || y >= height) continue;
+                
+                let idxVisitado = y * width + x;
+                if (visitado[idxVisitado]) continue;
+                visitado[idxVisitado] = 1;
+                
+                let pIdx = 4 * (y * width * d * d + x * d);
+                
+                if (
+                    pixels[pIdx] === targetR &&
+                    pixels[pIdx + 1] === targetG &&
+                    pixels[pIdx + 2] === targetB &&
+                    pixels[pIdx + 3] === targetA
+                ) {
+                    pixels[pIdx] = repR;
+                    pixels[pIdx + 1] = repG;
+                    pixels[pIdx + 2] = repB;
+                    pixels[pIdx + 3] = repA;
+                    
+                    pilha.push([x + 1, y]);
+                    pilha.push([x - 1, y]);
+                    pilha.push([x, y + 1]);
+                    pilha.push([x, y - 1]);
+                }
+            }
+            
+            updatePixels();
+        }
+
+        // Função que pega o título da modal e envia o desenho para o Flask
+        function enviarParaMural() {
+            let tituloInput = document.getElementById('input-titulo-desenho');
+            let titulo = tituloInput.value.trim() || "Minha Obra de Arte";
+
+            let canvasElement = document.querySelector('#canvas-container canvas');
+            if (!canvasElement) {
+                alert("Erro: Canvas não encontrado!");
+                return;
+            }
+
+            let dataUrl = canvasElement.toDataURL("image/png");
+
+            fetch("{{ url_for('salvar_mural') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `imagem_base64=${encodeURIComponent(dataUrl)}&titulo_desenho=${encodeURIComponent(titulo)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "{{ url_for('ver_mural') }}";
+                } else {
+                    alert("Erro ao salvar o desenho no mural.");
+                }
+            })
+            .catch(error => {
+                console.log("Erro:", error);
+                alert("Ocorreu um erro de conexão ao postar.");
+            });
         }
 
         function keyPressed() {
