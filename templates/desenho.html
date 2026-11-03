@@ -49,10 +49,10 @@
     <div class="container text-center">
         <h1 class="mb-4 titulo-pagina">DrawningHall</h1>
 
-        <!-- Controles com Ferramentas, Balde de Tinta e Postagem -->
+       
         <div class="card card-controles shadow-lg p-3 mb-4 mx-auto d-inline-flex flex-row flex-wrap align-items-center justify-content-center gap-3 rounded-4">
             
-            <!-- Seleção de Ferramenta (Pincel vs Balde) -->
+         
             <div class="btn-group" role="group" aria-label="Ferramentas de desenho">
                 <button type="button" id="btn-pincel" class="btn btn-dark active" onclick="mudarFerramenta('pincel')" title="Ferramenta Pincel">
                     <i class="fa fa-pencil"></i>
@@ -64,7 +64,7 @@
 
             <div class="vr opacity-25"></div>
 
-            <!-- Cor -->
+          
             <div class="d-flex align-items-center gap-2" title="Selecionar Cor">
                 <i class="fa fa-paint-brush icone-controle" aria-hidden="true"></i>
                 <input type="color" id="escolher-cor" class="form-control form-control-color border-0 bg-transparent" value="#ff0000" style="cursor: pointer;">
@@ -72,7 +72,6 @@
 
             <div class="vr opacity-25"></div>
 
-            <!-- Espessura (visível apenas para o pincel) -->
             <div class="d-flex align-items-center gap-2" id="grupo-espessura" title="Espessura da Linha">
                 <i class="fa fa-arrows-h icone-controle" aria-hidden="true"></i>
                 <input type="number" id="escolher-espessura" class="form-control form-control-sm text-center fw-bold" value="5" min="1" max="50" style="width: 70px;">
@@ -80,7 +79,7 @@
 
             <div class="vr opacity-25"></div>
 
-            <!-- Atalhos -->
+         
             <div class="text-secondary small d-flex align-items-center gap-1">
                 <i class="fa fa-keyboard-o me-1"></i>
                 <span>Limpar: <kbd class="bg-dark text-white">Espaço</kbd> / <kbd class="bg-dark text-white">C</kbd></span>
@@ -88,17 +87,17 @@
 
             <div class="vr opacity-25"></div>
 
-            <!-- Botão que aciona a Modal do Mural -->
+            
             <button type="button" class="btn btn-success btn-sm fw-bold px-3" data-bs-toggle="modal" data-bs-target="#modalTitulo">
                 <i class="fa fa-cloud-upload me-1"></i> Postar no Mural
             </button>
         </div>
 
-        <!-- Canvas p5.js -->
+    
         <div id="canvas-container" class="d-flex justify-content-center"></div>
     </div>
 
-    <!-- Modal do Bootstrap para digitar o Título sem usar prompt() -->
+    
     <div class="modal fade" id="modalTitulo" tabindex="-1" aria-labelledby="modalTituloLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0 rounded-4">
@@ -123,8 +122,7 @@
     <script>
         let corElemento;
         let espessuraElemento;
-        let ferramentaAtual = 'pincel'; // 'pincel' ou 'balde'
-
+        let ferramentaAtual = 'pincel'; 
         let larguraCanvas = Number("{{ largura }}") || 800;
         let alturaCanvas = Number("{{ altura }}") || 600;
 
@@ -138,7 +136,7 @@
         }
 
         function draw() {
-            // Desenho livre com o mouse pressionado (somente se a ferramenta for pincel)
+         
             if (mouseIsPressed && ferramentaAtual === 'pincel') {
                 stroke(corElemento.value);
                 strokeWeight(Number(espessuraElemento.value));
@@ -146,7 +144,7 @@
             }
         }
 
-        // Função chamada ao clicar no canvas (ideal para o balde de tinta)
+      
         function mousePressed() {
             if (mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
                 if (ferramentaAtual === 'balde') {
@@ -155,7 +153,7 @@
             }
         }
 
-        // Alternar entre Pincel e Balde de Tinta
+        
         function mudarFerramenta(ferramenta) {
             ferramentaAtual = ferramenta;
             let btnPincel = document.getElementById('btn-pincel');
@@ -173,7 +171,7 @@
             }
         }
 
-        // Algoritmo de Preenchimento por Inundação (Flood Fill Iterativo)
+      
         function floodFill(startX, startY, hexColor) {
             loadPixels();
             
@@ -231,7 +229,7 @@
             updatePixels();
         }
 
-        // Função que pega o título da modal e envia o desenho para o Flask
+    
         function enviarParaMural() {
             let tituloInput = document.getElementById('input-titulo-desenho');
             let titulo = tituloInput.value.trim() || "Minha Obra de Arte";
@@ -271,7 +269,7 @@
         }
     </script>
 
-    <!-- Bootstrap 5 JS Bundle -->
+ 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

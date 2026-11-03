@@ -2,15 +2,14 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import mysql.connector
 
 app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_super_segura'
+app.secret_key = 'chavesecreta123'
 
-# Função para conectar diretamente ao banco de dados no MySQL Workbench
 def conectar_banco():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="labinfo",       # Substitua pela sua senha do MySQL Workbench
-        database="drawninghall_db"   # Certifique-se de criar este banco antes no Workbench
+        password="labinfo",       
+        database="drawninghall_db"   
     )
 
 @app.route("/")
@@ -29,7 +28,7 @@ def login():
     cursor = conexao.cursor(dictionary=True)
     
     if acao == 'cadastrar':
-        # Verifica se o usuário já existe
+      
         cursor.execute("SELECT * FROM usuarios WHERE nome = %s", (nome,))
         usuario_existente = cursor.fetchone()
         
@@ -38,7 +37,7 @@ def login():
             conexao.close()
             return render_template('index.html', erro="Este nome de usuário já está em uso!")
         
-        # COMANDO CRUD (CREATE) em SQL puro
+      
         cursor.execute("INSERT INTO usuarios (nome, senha) VALUES (%s, %s)", (nome, senha))
         conexao.commit()
         
@@ -49,7 +48,7 @@ def login():
         return redirect(url_for('definicao'))
         
     elif acao == 'entrar':
-        # COMANDO CRUD (READ) em SQL puro para validar o login
+ 
         cursor.execute("SELECT * FROM usuarios WHERE nome = %s AND senha = %s", (nome, senha))
         usuario = cursor.fetchone()
         
@@ -93,7 +92,7 @@ def salvar_mural():
         conexao = conectar_banco()
         cursor = conexao.cursor()
         
-        # COMANDO CRUD (CREATE) em SQL puro para salvar o desenho e a imagem em Base64
+    
         cursor.execute(
             "INSERT INTO desenhos (titulo, autor, imagem) VALUES (%s, %s, %s)",
             (titulo, autor, dados_imagem)
@@ -110,7 +109,7 @@ def ver_mural():
     conexao = conectar_banco()
     cursor = conexao.cursor(dictionary=True)
     
-    # COMANDO CRUD (READ) em SQL puro para listar todos os desenhos do mais recente para o mais antigo
+ 
     cursor.execute("SELECT id, titulo, autor, imagem FROM desenhos ORDER BY id DESC")
     desenhos_db = cursor.fetchall()
     
@@ -126,13 +125,12 @@ def excluir(id_desenho):
     
     conexao = conectar_banco()
     cursor = conexao.cursor(dictionary=True)
-    
-    # Verifica se o desenho pertence ao usuário logado antes de excluir
+ 
     cursor.execute("SELECT autor FROM desenhos WHERE id = %s", (id_desenho,))
     desenho = cursor.fetchone()
     
     if desenho and desenho['autor'] == session['usuario']:
-        # COMANDO CRUD (DELETE) em SQL puro
+    
         cursor.execute("DELETE FROM desenhos WHERE id = %s", (id_desen_desenho := id_desenho)) # ou simplesmente id_desenho
         cursor.execute("DELETE FROM desenhos WHERE id = %s", (id_desenho,))
         conexao.commit()
