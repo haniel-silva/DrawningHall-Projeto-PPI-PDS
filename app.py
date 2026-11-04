@@ -125,13 +125,12 @@ def excluir(id_desenho):
     
     conexao = conectar_banco()
     cursor = conexao.cursor(dictionary=True)
- 
+    
     cursor.execute("SELECT autor FROM desenhos WHERE id = %s", (id_desenho,))
     desenho = cursor.fetchone()
     
     if desenho and desenho['autor'] == session['usuario']:
-    
-        cursor.execute("DELETE FROM desenhos WHERE id = %s", (id_desen_desenho := id_desenho)) # ou simplesmente id_desenho
+        # Corrigido: passando apenas a tupla limpa com o ID
         cursor.execute("DELETE FROM desenhos WHERE id = %s", (id_desenho,))
         conexao.commit()
         
