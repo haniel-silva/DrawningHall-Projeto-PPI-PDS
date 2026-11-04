@@ -140,4 +140,4 @@ def excluir(id_desenho):
     return redirect(url_for('ver_mural'))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(port=5000, debug=True)
