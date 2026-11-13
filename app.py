@@ -1,8 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import mysql.connector
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
+app.config.from_object('config')
 app.secret_key = 'chavesecreta123'
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 def conectar_banco():
     return mysql.connector.connect(
@@ -141,3 +147,6 @@ def excluir(id_desenho):
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
+
+
+
