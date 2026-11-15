@@ -1,22 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import mysql.connector
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import os
 
 app = Flask(__name__)
+
+# Configuração robusta: lê do arquivo config.py ou pega variáveis de ambiente (ideal para o Vercel/Supabase)
 app.config.from_object('config')
-app.secret_key = 'chavesecreta123'
+app.secret_key = os.environ.get('SECRET_KEY', 'chavesecreta123')
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-def conectar_banco():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="labinfo",       
-        database="drawninghall_db"   
-    )
+# Importa os models para o SQLAlchemy reconhecer as tabelas
+from models import Usuario, Desenho
 
 @app.route("/")
 def index():
@@ -29,41 +26,28 @@ def login():
     acao = request.form.get('acao')
     nome = request.form.get('usuario')
     senha = request.form.get('senha')
-    
-    conexao = conectar_banco()
-    cursor = conexao.cursor(dictionary=True)
+
     
     if acao == 'cadastrar':
-      
-        cursor.execute("SELECT * FROM usuarios WHERE nome = %s", (nome,))
-        usuario_existente = cursor.fetchone()
+        usuario_existente = Usuario.query.filter_by(nome=nome).first()
         
         if usuario_existente:
-            cursor.close()
-            conexao.close()
             return render_template('index.html', erro="Este nome de usuário já está em uso!")
         
-      
-        cursor.execute("INSERT INTO usuarios (nome, senha) VALUES (%s, %s)", (nome, senha))
-        conexao.commit()
-        
-        cursor.close()
-        conexao.close()
+        novo_usuario = Usuario(nome=nome, senha=senha)
+        db.session.add(novo_usuario)
+        db.session.commit()
         
         session['usuario'] = nome
         return redirect(url_for('definicao'))
         
     elif acao == 'entrar':
- 
-        cursor.execute("SELECT * FROM usuarios WHERE nome = %s AND senha = %s", (nome, senha))
-        usuario = cursor.fetchone()
-        
-        cursor.close()
-        conexao.close()
+        usuario = Usuario.query.filter_by(nome=nome, senha=senha).first()
         
         if usuario:
             session['usuario'] = nome
             return redirect(url_for('definicao'))
+            
         return render_template('index.html', erro="Usuário ou senha incorretos!")
 
 @app.route("/logout")
@@ -95,33 +79,16 @@ def salvar_mural():
     autor = session['usuario']
     
     if dados_imagem:
-        conexao = conectar_banco()
-        cursor = conexao.cursor()
-        
-    
-        cursor.execute(
-            "INSERT INTO desenhos (titulo, autor, imagem) VALUES (%s, %s, %s)",
-            (titulo, autor, dados_imagem)
-        )
-        conexao.commit()
-        
-        cursor.close()
-        conexao.close()
+        novo_desenho = Desenho(titulo=titulo, autor=autor, imagem=dados_imagem)
+        db.session.add(novo_desenho)
+        db.session.commit()
         
     return redirect(url_for('ver_mural'))
 
 @app.route("/mural")
 def ver_mural():
-    conexao = conectar_banco()
-    cursor = conexao.cursor(dictionary=True)
-    
- 
-    cursor.execute("SELECT id, titulo, autor, imagem FROM desenhos ORDER BY id DESC")
-    desenhos_db = cursor.fetchall()
-    
-    cursor.close()
-    conexao.close()
-    
+    # Busca os desenhos ordenados do mais recente para o mais antigo
+    desenhos_db = Desenho.query.order_by(Desenho.id.desc()).all()
     return render_template('mural.html', desenhos=desenhos_db, usuario_atual=session.get('usuario'))
 
 @app.route("/excluir/<int:id_desenho>", methods=["POST"])
@@ -129,24 +96,13 @@ def excluir(id_desenho):
     if 'usuario' not in session:
         return redirect(url_for('index'))
     
-    conexao = conectar_banco()
-    cursor = conexao.cursor(dictionary=True)
+    desenho = Desenho.query.get(id_desenho)
     
-    cursor.execute("SELECT autor FROM desenhos WHERE id = %s", (id_desenho,))
-    desenho = cursor.fetchone()
-    
-    if desenho and desenho['autor'] == session['usuario']:
-        # Corrigido: passando apenas a tupla limpa com o ID
-        cursor.execute("DELETE FROM desenhos WHERE id = %s", (id_desenho,))
-        conexao.commit()
+    if desenho and desenho.autor == session['usuario']:
+        db.session.delete(desenho)
+        db.session.commit()
         
-    cursor.close()
-    conexao.close()
-    
     return redirect(url_for('ver_mural'))
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
-
-
-
